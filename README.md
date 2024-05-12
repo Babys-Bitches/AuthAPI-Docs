@@ -1,92 +1,47 @@
-# AuthAPI-Docs
+# Creating New License Keys API Documentation
 
+## Overview
+This document provides detailed instructions on how to create new license keys for applications using our RESTful API. This API allows authorized users to generate license keys with specified validity durations.
 
-***CONFIG SETUP***
+## Prerequisites
+Before you proceed, ensure you have:
+- A valid API access token.
+- The application ID for which you want to generate licenses.
 
-**These settings has to be included in your project. In this example we are using axios wich can be installed with `npm install axios`**
+## API Endpoint
 
-```java
-const axios = require('axios');
+### Request Details
+**Endpoint:** `/backend/dashboard/api/v1/apps/{appId}/licenses`
+**Method:** POST
+**URL Format:** `http://{SERVER_IP}:{PORT}/backend/dashboard/api/v1/apps/{APP_ID}/licenses`
+Replace `{SERVER_IP}` with your server's IP address, `{PORT}` with your server's port, and `{APP_ID}` with the application ID.
 
-const VUE_APP_ENDPOINT = 'https://yourapi.domain.com:port'; // Your backend endpoint
-const token = 'your_auth_token'; // Your authentication token
-const appId = 'your_app_id'; // Your application ID
-```
+### Headers
+Include the following headers in your request:
+- `Content-Type: application/json`
+- `Authorization: YOUR_ACCESS_TOKEN` (Replace `YOUR_ACCESS_TOKEN` with your actual token.)
 
-&nbsp;
+### Body Parameters
+Provide the following details:
+- `duration`: INTEGER (Validity duration of the licenses in days)
+- `quantity`: INTEGER (Number of licenses to generate)
 
-***Generating License Keys***
+### Example Request
+Configure your request in API testing tools like Talend API Tester with the URL constructed as shown above.
+**Method:** POST
+**Headers:**
+- `Content-Type: application/json`
+- `Authorization: YOUR_ACCESS_TOKEN`
 
-**To generate license keys, you would typically use the generateLicenses function.**
+**Body:**
+{
+"duration": 30,
+"quantity": 1
+}
 
-```java
-const generateLicense = async (duration, quantity) => {
-    try {
-        const response = await axios.post(`${VUE_APP_ENDPOINT}/backend/dashboard/api/v1/apps/${appId}/licenses`, {
-            duration,
-            quantity
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': token
-            }
-        });
-        console.log('License generated:', response.data);
-    } catch (error) {
-        console.error('Error generating license:', error);
-    }
-};
-
-generateLicense('30', '1'); // Example usage
-```
-
-&nbsp;
-
-***Deleting License Keys***
-
-**To delete a license key, the deleteLicense function.**
-
-```java
-const deleteLicense = async (licenseId) => {
-    try {
-        const response = await axios.delete(`${VUE_APP_ENDPOINT}/backend/dashboard/api/v1/apps/${appId}/licenses/${licenseId}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': token
-            }
-        });
-        console.log('License deleted:', response.data);
-    } catch (error) {
-        console.error('Error deleting license:', error);
-    }
-};
-
-deleteLicense('license_id_here'); // Replace 'license_id_here' with your actual license ID
-```
-
-&nbsp;
-
-***Resetting HWID on License Keys***
-
-**To reset the HWID on license keys, the resetHWID function is used.**
-
-```java
-const resetHWID = async (licenseId) => {
-    try {
-        const response = await axios.put(`${VUE_APP_ENDPOINT}/backend/dashboard/api/v1/apps/${appId}/licenses/${licenseId}`, {}, {
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': token
-            }
-        });
-        console.log('HWID reset:', response.data);
-    } catch (error) {
-        console.error('Error resetting HWID:', error);
-    }
-};
-
-resetHWID('license_id_here'); // Replace 'license_id_here' with your actual license ID
-```
-
-&nbsp;
-
+## Handling Responses
+The API will return a JSON response indicating the request status:
+- **200 OK:** Licenses successfully generated; details included in the response.
+- **401 Unauthorized:** Invalid or expired access token.
+- **400 Bad Request:** Possible error in request format or missing parameters.
+- **500 Internal Server Error:** Server-side error during request processing.
