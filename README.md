@@ -1,47 +1,131 @@
-# Creating New License Keys API Documentation
+1. Authentication Endpoint
+URL:
 
-## Overview
-This document provides detailed instructions on how to create new license keys for applications using our RESTful API. This API allows authorized users to generate license keys with specified validity durations.
+ruby
+Copy
+Edit
+http://45.13.227.206:3845/backend/client/api/v1/authenticate
+Method:
+POST
 
-## Prerequisites
-Before you proceed, ensure you have:
-- A valid API access token.
-- The application ID for which you want to generate licenses.
+Parameters (Form Data):
 
-## API Endpoint
+license: Your license key (string).
+token: Your hardware ID (HWID). This value is typically retrieved from the system (e.g., using a user SID).
+Description:
+Submit your license key and HWID to authenticate. A successful response returns license details, a session token, and application information.
 
-### Request Details
-**Endpoint:** `/backend/dashboard/api/v1/apps/{appId}/licenses`
-**Method:** POST
-**URL Format:** `http://{SERVER_IP}:{PORT}/backend/dashboard/api/v1/apps/{APP_ID}/licenses`
-Replace `{SERVER_IP}` with your server's IP address, `{PORT}` with your server's port, and `{APP_ID}` with the application ID.
+Example Request using cURL:
 
-### Headers
-Include the following headers in your request:
-- `Content-Type: application/json`
-- `Authorization: YOUR_ACCESS_TOKEN` (Replace `YOUR_ACCESS_TOKEN` with your actual token.)
+bash
+Copy
+Edit
+curl -X POST "http://45.13.227.206:3845/backend/client/api/v1/authenticate" \
+     -d "license=YOUR_LICENSE_KEY&token=YOUR_HWID"
+Example Successful Response:
 
-### Body Parameters
-Provide the following details:
-- `duration`: INTEGER (Validity duration of the licenses in days)
-- `quantity`: INTEGER (Number of licenses to generate)
-
-### Example Request
-Configure your request in API testing tools like Talend API Tester with the URL constructed as shown above.
-**Method:** POST
-**Headers:**
-- `Content-Type: application/json`
-- `Authorization: YOUR_ACCESS_TOKEN`
-
-**Body:**
+json
+Copy
+Edit
 {
-"duration": 30,
-"quantity": 1
+  "status": "success",
+  "license": {
+    "id": "license_id",
+    "hwid": "your_hwid",
+    "expiry": "expiry_date",
+    "created_on": "creation_date",
+    "duration": 12345
+  },
+  "token": "session_token",
+  "app": {
+    "id": "app_id",
+    "name": "app_name",
+    "version": "app_version",
+    "status": "app_status",
+    "created_on": "app_creation_date"
+  }
 }
+2. Secure Module (Image) Endpoint
+URL:
 
-## Handling Responses
-The API will return a JSON response indicating the request status:
-- **200 OK:** Licenses successfully generated; details included in the response.
-- **401 Unauthorized:** Invalid or expired access token.
-- **400 Bad Request:** Possible error in request format or missing parameters.
-- **500 Internal Server Error:** Server-side error during request processing.
+ruby
+Copy
+Edit
+http://45.13.227.206:3845/backend/client/api/v1/module?token=<session_token>
+Method:
+GET
+
+Parameters:
+
+token: The session token obtained from the authentication response.
+Description:
+This endpoint returns an encrypted module (referred to as an image). The response includes an array of unsigned 32-bit integers that represent the encrypted data.
+
+Decryption Process
+Derive the Decryption Key:
+The key is calculated by summing the ASCII values of each character in your license key.
+
+Decrypt the Image:
+Each element in the image array is XORed with the derived key.
+
+Example Request using cURL:
+
+bash
+Copy
+Edit
+curl "http://45.13.227.206:3845/backend/client/api/v1/module?token=SESSION_TOKEN"
+3. Variable Retrieval Endpoint
+URL:
+
+bash
+Copy
+Edit
+http://45.13.227.206:3845/backend/client/api/v1/variables/<variable_id>?license=YOUR_LICENSE_KEY
+Method:
+GET
+
+Parameters:
+
+variable_id: The identifier for the variable you wish to retrieve.
+license: Your license key (string).
+Description:
+Retrieve details about a specific variable. On success, the response includes the variable’s name and content.
+
+Example Request using cURL:
+
+bash
+Copy
+Edit
+curl "http://45.13.227.206:3845/backend/client/api/v1/variables/VARIABLE_ID?license=YOUR_LICENSE_KEY"
+Example Successful Response:
+
+json
+Copy
+Edit
+{
+  "status": "success",
+  "variable": {
+    "name": "variable_name",
+    "content": "variable_content"
+  }
+}
+Usage Workflow
+Authenticate:
+
+Call the /authenticate endpoint with your license and HWID to receive your session token, license details, and application info.
+Retrieve the Secure Module:
+
+Use the session token from authentication to request the secure module using the /module endpoint.
+Derive the decryption key from your license (by summing its ASCII values) and decrypt the returned image by XORing each value with the key.
+Retrieve Variables:
+
+Use the /variables/<variable_id> endpoint with your license key and the variable ID to fetch variable details.
+Additional Notes
+SSL Verification:
+The provided examples disable SSL verification. For production, make sure to enable SSL verification to ensure secure communication.
+
+Error Handling:
+If the authentication response contains an error message with "Restart", the request is automatically retried. Other errors result in displaying an error message and terminating the application.
+
+Response Format:
+All responses are in JSON format. Use a JSON parser to handle the response data in your application.
