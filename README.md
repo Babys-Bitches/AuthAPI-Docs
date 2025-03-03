@@ -1,3 +1,17 @@
+API Documentation
+This document explains how to interact with the API endpoints for authentication, retrieving a secure module (encrypted image), and fetching variables. All requests are sent to the host 45.13.227.206 on port 3845.
+
+Note: SSL verification is disabled in the provided examples (i.e., CURLOPT_SSL_VERIFYPEER is set to 0). It is recommended to enable SSL verification in production environments.
+
+
+Table of Contents
+1. Authentication Endpoint
+2. Secure Module (Image) Endpoint
+3. Variable Retrieval Endpoint
+4. Usage Workflow
+5. Additional Notes
+
+
 1. Authentication Endpoint
 URL:
 
