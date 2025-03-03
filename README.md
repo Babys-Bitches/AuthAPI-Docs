@@ -9,6 +9,7 @@ Secure Module (Image) Endpoint
 Variable Retrieval Endpoint
 Usage Workflow
 Additional Notes
+
 1. Authentication Endpoint
 URL:
 http://45.13.227.206:3845/backend/client/api/v1/authenticate
