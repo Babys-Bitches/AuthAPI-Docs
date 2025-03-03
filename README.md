@@ -1,16 +1,17 @@
-API Documentation
+# API Documentation  
 This document explains how to interact with the API endpoints for authentication, retrieving a secure module (encrypted image), and fetching variables. All requests are sent to the host 45.13.227.206 on port 3845.
 
 Note: SSL verification is disabled in the provided examples (i.e., CURLOPT_SSL_VERIFYPEER is set to 0). It is recommended to enable SSL verification in production environments.
 
-Table of Contents
-Authentication Endpoint
-Secure Module (Image) Endpoint
-Variable Retrieval Endpoint
-Usage Workflow
-Additional Notes
+Table of Contents  
+1. Authentication Endpoint  
+2. Secure Module (Image) Endpoint  
+3. Variable Retrieval Endpoint  
+4. Usage Workflow  
+5. Additional Notes  
 
-1. Authentication Endpoint
+
+# 1. Authentication Endpoint
 URL:
 http://45.13.227.206:3845/backend/client/api/v1/authenticate
 Method:
@@ -45,8 +46,9 @@ json
     "status": "app_status",
     "created_on": "app_creation_date"
   }
-}
-2. Secure Module (Image) Endpoint
+}  
+
+# 2. Secure Module (Image) Endpoint
 URL:
 http://45.13.227.206:3845/backend/client/api/v1/module?token=<session_token>
 Method:
@@ -65,9 +67,9 @@ Decrypt the Image:
 Each element in the image array is XORed with the derived key.
 
 Example Request using cURL:
-curl "http://45.13.227.206:3845/backend/client/api/v1/module?token=SESSION_TOKEN"
+curl "http://45.13.227.206:3845/backend/client/api/v1/module?token=SESSION_TOKEN"  
 
-3. Variable Retrieval Endpoint
+# 3. Variable Retrieval Endpoint
 URL:
 http://45.13.227.206:3845/backend/client/api/v1/variables/<variable_id>?license=YOUR_LICENSE_KEY
 Method:
@@ -91,8 +93,9 @@ json
     "name": "variable_name",
     "content": "variable_content"
   }
-}
-Usage Workflow
+}  
+
+# 4. Usage Workflow
 Authenticate:
 
 Call the /authenticate endpoint with your license and HWID to receive your session token, license details, and application info.
@@ -102,8 +105,9 @@ Use the session token from authentication to request the secure module using the
 Derive the decryption key from your license (by summing its ASCII values) and decrypt the returned image by XORing each value with the key.
 Retrieve Variables:
 
-Use the /variables/<variable_id> endpoint with your license key and the variable ID to fetch variable details.
-Additional Notes
+Use the /variables/<variable_id> endpoint with your license key and the variable ID to fetch variable details.  
+
+# 5. Additional Notes
 SSL Verification:
 The provided examples disable SSL verification. For production, make sure to enable SSL verification to ensure secure communication.
 
